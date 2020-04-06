@@ -7,35 +7,41 @@ import "./App.css";
 const App = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(50);
+  const [currentPaginationIndex, setCurrentPaginationIndex] = useState(1);
+  const [postsPerPage] = useState(5);
+  const [allPostsCount, setAllPostsCount] = useState(0);
 
   useEffect(() => {
+    let startIndex =
+      currentPaginationIndex === 1
+        ? currentPaginationIndex
+        : (currentPaginationIndex - 1) * postsPerPage + 1;
+
     const fetchPosts = async () => {
       setLoading(true);
-      const res = await axios.get("https://jsonplaceholder.typicode.com/posts");
-      setPosts(res.data);
+      const { posts, totalRecords } = (
+        await axios.get(
+          `http://localhost:5000/getPosts/${startIndex}/${postsPerPage}`
+        )
+      ).data;
+      setPosts(posts);
+      setAllPostsCount(totalRecords);
       setLoading(false);
     };
 
     fetchPosts();
-  }, []);
-
-  // Get current posts
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+  }, [currentPaginationIndex, postsPerPage]);
 
   // Change page
-  const paginate = pageNumber => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPaginationIndex(pageNumber);
 
   return (
     <div className="container mt-5">
       <h1 className="text-primary mb-3">List of Posts</h1>
-      <Posts posts={currentPosts} loading={loading} />
+      <Posts posts={posts} loading={loading} />
       <Pagination
         postsPerPage={postsPerPage}
-        totalPosts={posts.length}
+        totalPosts={allPostsCount}
         paginate={paginate}
       />
     </div>

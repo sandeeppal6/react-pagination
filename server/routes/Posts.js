@@ -21,7 +21,7 @@ router.get("/getPosts/:startIndex/:limit", (req, res) => {
     if (err) {
       res.status(500).send({ error: err });
     } else {
-      return res.status(200).send({ data: { totalRecords, posts: result } });
+      return res.status(200).send({ totalRecords, posts: result });
     }
   });
 });
