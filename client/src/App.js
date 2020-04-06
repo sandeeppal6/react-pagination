@@ -8,8 +8,12 @@ const App = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPaginationIndex, setCurrentPaginationIndex] = useState(1);
-  const [postsPerPage] = useState(5);
+  const [postsPerPage, setPostsPerPage] = useState(5);
   const [allPostsCount, setAllPostsCount] = useState(0);
+
+  useEffect(() => {
+    setCurrentPaginationIndex(1);
+  }, [postsPerPage]);
 
   useEffect(() => {
     let startIndex =
@@ -38,6 +42,15 @@ const App = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-primary mb-3">List of Posts</h1>
+      <select
+        className="form-control"
+        onChange={(evt) => setPostsPerPage(evt.target.value)}
+      >
+        <option value={5}>Choose items per page (Default is 5)</option>
+        <option value={10}>10</option>
+        <option value={20}>20</option>
+      </select>
+      <br />
       <Posts posts={posts} loading={loading} />
       <Pagination
         postsPerPage={postsPerPage}
